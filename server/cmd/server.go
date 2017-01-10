@@ -16,8 +16,7 @@ const (
 
 var (
 	printVersion = flag.Bool("version", false, "Print the version and exit")
-	//host         = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
-	host = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
+	host         = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
 )
 
 func main() {
