@@ -3,13 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/codegangsta/negroni"
-	"github.com/gorilla/mux"
+	"gopkg.in/gin-gonic/gin.v1"
 	"log"
-	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 const (
@@ -19,7 +16,8 @@ const (
 
 var (
 	printVersion = flag.Bool("version", false, "Print the version and exit")
-	listen       = flag.String("listen", "0.0.0.0:8080", "IP and port to listen for HTTP requests (i.e. 0.0.0.0:8080)")
+	//host         = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
+	host = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
 )
 
 func main() {
@@ -37,18 +35,28 @@ func main() {
 func start() {
 	// Initialize loggers
 	logger := log.New(os.Stdout, "[server] ", 0)
-	accessLogger := log.New(os.Stdout, "[http] ", 0)
+	//accessLogger := log.New(os.Stdout, "[http] ", 0)
 
-	mux := mux.NewRouter()
-	mux.HandleFunc("/health", healthCheckHandler).Methods("GET")
-
-	//start listening for HTTP requests
-	n := negroni.New(negroni.NewRecovery(), NewAccessLogger(accessLogger))
-	n.UseHandler(mux)
-	logger.Printf("listening on %s", *listen)
-	logger.Fatal(http.ListenAndServe(*listen, n))
+	router := gin.Default()
+	router.GET("/health", func(context *gin.Context) {
+		context.JSON(200, gin.H{
+			"status": "ok",
+		})
+	})
+	if strings.HasPrefix(*host, "tcp://") {
+		listen := (*host)[6:]
+		logger.Printf("listening on TCP %s", listen)
+		logger.Fatal(router.Run(listen))
+	} else if strings.HasPrefix(*host, "unix://") {
+		listen := (*host)[6:]
+		logger.Printf("listening on UNIX Socket %s", listen)
+		logger.Fatal(router.RunUnix(listen))
+	} else {
+		logger.Fatal("Unable to parse host option")
+	}
 }
 
+/*
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 }
@@ -107,3 +115,4 @@ func clientIP(req *http.Request) string {
 
 	return ip
 }
+*/
