@@ -1,0 +1,25 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "GzCah0kCSV5leSZeKL6Sw/jGxFs=",
+			"path": "github.com/codegangsta/negroni",
+			"revision": "1dd3ab0ff59e13f5b73dcbf70703710aebe50d2f",
+			"revisionTime": "2014-12-14T23:15:41Z"
+		},
+		{
+			"checksumSHA1": "asCWH75L/8woaBq7dHg4q5pKeSU=",
+			"path": "github.com/gorilla/context",
+			"revision": "215affda49addc4c8ef7e2534915df2c8c35c6cd",
+			"revisionTime": "2014-12-17T16:02:51Z"
+		},
+		{
+			"checksumSHA1": "3D714e/U4pJy8oJsjFyz0SjCnPE=",
+			"path": "github.com/gorilla/mux",
+			"revision": "f15e0c49460fd49eebe2bcc8486b05d1bef68d3a",
+			"revisionTime": "2015-07-27T16:40:50Z"
+		}
+	],
+	"rootPath": "github.com/washingtonpost/lambda-gateway/server"
+}
