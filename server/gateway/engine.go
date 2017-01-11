@@ -1,9 +1,9 @@
 package gateway
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"log"
@@ -16,13 +16,10 @@ import (
 type Engine struct {
 	logger     *log.Logger
 	lambda_arn string
-	config     *aws.Config
 }
 
 func NewEngine(logger *log.Logger, lambda_arn string) *Engine {
-	creds := credentials.NewEnvCredentials()
-	config := &aws.Config{Credentials: creds}
-	return &Engine{logger, lambda_arn, config}
+	return &Engine{logger, lambda_arn}
 }
 
 func (e *Engine) Run(host string) error {
@@ -55,6 +52,10 @@ func (e *Engine) RunUnix(file string) error {
 
 // Conforms to the http.Handler interface.
 func (e *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	e.serveHTTP(w, req)
+}
+
+func (e *Engine) serveHTTP(w http.ResponseWriter, req *http.Request) {
 	sess, err := session.NewSession()
 	if err != nil {
 		panic(err)
@@ -68,10 +69,37 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	resp, err := svc.Invoke(params)
-
 	if err != nil {
 		panic(err)
 	}
 
-	w.Write([]byte(fmt.Sprintf("%v\n", resp)))
+	status := int(*resp.StatusCode)
+	funcResp, err := parseResponse(resp.Payload)
+	if err != nil {
+		e.logger.Printf("failed to parse response payload %v", err)
+		w.WriteHeader(status)
+		return
+	}
+
+	if funcResp.StatusCode > 0 {
+		status = funcResp.StatusCode
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write([]byte(funcResp.Body))
+}
+
+type functionResponse struct {
+	StatusCode int    `json:"statusCode"`
+	Body       string `json:"body"`
+}
+
+func parseResponse(payload []byte) (*functionResponse, error) {
+	var resp functionResponse
+	err := json.Unmarshal(payload, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
