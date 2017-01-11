@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/washingtonpost/lambda-gateway/server/gateway"
+	"github.com/washingtonpost/lambda-gateway/gateway"
 	"log"
 	"os"
 )
