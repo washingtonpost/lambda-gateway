@@ -5,6 +5,10 @@ services:
     build: .
     volumes:
       - "/tmp/lambda-gateway:/tmp"
+    environment:
+      - "AWS_REGION"
+      - "AWS_ACCESS_KEY_ID"
+      - "AWS_SECRET_ACCESS_KEY"
   nginx:
     container_name: nginx 
     image: nginx 

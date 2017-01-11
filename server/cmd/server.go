@@ -16,6 +16,7 @@ const (
 var (
 	printVersion = flag.Bool("version", false, "Print the version and exit")
 	host         = flag.String("host", "unix://tmp/lambda.sock", "Host to listen on. Can be a TCP connection (e.g. tcp://0.0.0.0:8080) or Unix Socket.")
+	lambda       = flag.String("lambda", "", "AWS Lambda ARN to invoke (e.g. arn:aws:lambda:us-east-1:111111111111:function:foobar).")
 )
 
 func main() {
@@ -33,6 +34,6 @@ func main() {
 func start() {
 	// Initialize loggers
 	logger := log.New(os.Stdout, "[server] ", 0)
-	engine := gateway.NewEngine(logger)
+	engine := gateway.NewEngine(logger, *lambda)
 	logger.Fatal(engine.Run(*host))
 }
