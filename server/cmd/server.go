@@ -15,7 +15,7 @@ const (
 
 var (
 	printVersion = flag.Bool("version", false, "Print the version and exit")
-	host         = flag.String("host", "tcp://0.0.0.0:8080", "Host to listen on. Can be a TCP connection or Unix Socket.")
+	host         = flag.String("host", "unix://tmp/lambda.sock", "Host to listen on. Can be a TCP connection (e.g. tcp://0.0.0.0:8080) or Unix Socket.")
 )
 
 func main() {
@@ -34,5 +34,5 @@ func start() {
 	// Initialize loggers
 	logger := log.New(os.Stdout, "[server] ", 0)
 	engine := gateway.NewEngine(logger)
-	engine.Run(*host)
+	logger.Fatal(engine.Run(*host))
 }

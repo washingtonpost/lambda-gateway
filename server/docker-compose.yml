@@ -1,6 +1,18 @@
 version: "2"
 services:
-  server:
+  lambda:
+    container_name: lambda 
     build: .
+    volumes:
+      - "/tmp/lambda-gateway:/tmp"
+  nginx:
+    container_name: nginx 
+    image: nginx 
+    depends_on:
+      - "lambda"
     ports:
       - "8080:8080"
+    volumes:
+      - "/tmp/lambda-gateway:/tmp"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+
