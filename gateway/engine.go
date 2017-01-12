@@ -46,6 +46,12 @@ func (e *Engine) RunUnix(file string) error {
 	if err != nil {
 		return err
 	}
+
+	err = os.Chmod(file, 0666)
+	if err != nil {
+		return err
+	}
+
 	defer listener.Close()
 	return http.Serve(listener, e)
 }
